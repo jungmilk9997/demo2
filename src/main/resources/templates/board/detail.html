@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+  <script language="JavaScript" th:inline="javascript">
+    function post(num){
+      document.getElementById("postNum").value=num;
+    }
+  </script>
+</head>
+<body>
+<!--헤더-->
+<div th:insert="common/header.html" id="header"></div>
+<div class="container">
+  <div>
+    <h5 class="text-center">게시글 상세보기 </h5>
+    <!--버튼들 @링크식 누르면 해당 그걸로 이동함-->
+    <!--본문-->
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <a th:href="@{'/'}" ><button class="btn btn-success  btn-primary me-md-2">  목록 </button> </a>
+      <a th:href="@{'/post/' + ${boardDto.id}+'/checkReBoard'}">
+        <button class="btn btn-warning " >수정</button></a>
+      <!--<form th:action="@{'/post/' + ${boardDto.id}+'/checkDeleteBoard'}" method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <button  class="btn btn-danger me-md-2">삭제</button>
+      </form>-->
+      <a th:href="@{'/post/' + ${boardDto.id}+'/checkDeleteBoard'}">
+        <button class="btn btn-danger " >삭제</button></a>
+    </div>
+    <h5 th:text="'전체보기/카테고리) '+${boardDto.category}"></h5>
+    <table class="table" width="1000px">
+      <tr>
+        <th bgcolor="#F6F6F6" class="text-center">제목</th>
+        <td colspan="6" th:text="${boardDto.title}"></td>
+      </tr>
+
+      <tr>
+        <th bgcolor="#F6F6F6" class="text-center">작성자</th>
+        <td th:text="${boardDto.writer}"></td>
+        <th bgcolor="#F6F6F6" class="text-center">작성일</th>
+        <td th:inline="text" > [[${#temporals.format(boardDto.createdDate, 'yyyy-MM-dd HH:mm')}]]</td>
+        <th bgcolor="#F6F6F6" class="text-center">조회수</th>
+        <td th:text="${boardDto.hintCnt}"></td>
+      </tr>
+      <tr th:if="${boardDto.fileId!=null}">
+        <th bgcolor="#F6F6F6" class="text-center">첨부파일</th>
+        <td><a class="card-text" th:href="@{'/download/' + ${boardDto.fileId}}" th:text="${fileDto.origFilename}"></a>
+        </td>
+      </tr>
+      <tr>
+        <th  colspan="6" class="text-center" bgcolor="#F6F6F6">내용</th>
+      </tr>
+      <tr th:if="${fileprint!=null}">
+        <td align="center" colspan="6">
+          <img th:src="@{'/download/' + ${boardDto.fileId}}" width="250px">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="6" th:text="${boardDto.content}" height="300px">
+        </td>
+      </tr>
+      <tr></tr>
+    </table>
+  </div>
+  <hr>
+  <div>
+
+    <!--댓글작성-->
+    <h5 class="text-center">댓글 작성</h5>
+
+    <form th:action="@{'/post/' + ${boardDto.id}}" method="post" modelAttribute="postDto">
+      <input type="hidden" name="boardEntity" th:value="${boardDto.id}">
+      <input type="text" name="postNum" id="postNum" th:value="null"/>
+      <div class="input-group">
+        <span class="input-group-text" >댓글내용</span>
+        <textarea type="text" name="content" aria-label="First name" class="form-control" th:value="${postDto.content}" ></textarea>
+        <span th:text="${valid_content}"></span><br>
+        <span class="input-group-text">닉네임</span>
+        <input type="text" name="name" class="form-control" th:value="${postDto.name}" >
+        <span th:text="${valid_name}"></span>
+        <span class="input-group-text">비밀번호</span>
+          <input type="text" class="form-control" id="pwd" name="pwd" placeholder="비밀번호를 숫자로만 구성하여 입력하세요">
+          <span th:text="${valid_pwd}"></span><br>
+        <input type="submit"  value="등록" class="btn btn-primary float-right" onclick="">
+      </div>
+    </form>
+
+  </div>
+  <!--댓글 보여주는 테이블-->
+
+  <table class="table" width="1000px">
+    <thead>
+    <tr>
+      <th class="one wide">번호</th>
+      <th class="ten wide">내용</th>
+      <th class="two wide">작성자</th>
+    </tr>
+    </thead>
+
+    <tbody th:each="post : ${postList}">
+    <!-- CONTENTS !-->
+    <tr>
+      <td width="10%" th:if="${post.Id==post.postNum}">
+        <input th:value="${post.Id}" type="button" th:onclick="post([[${post.Id}]]);"/>
+      </td>
+      <td width="20%" th:unless="${post.Id==post.postNum}">
+        <input th:value="${post.Id}" type="hidden" th:onclick="post([[${post.Id}]]);"/>
+        <span th:text="${'▷'+post.postNum+'번 답글'}"></span>
+      </td>
+      <td width="50%">
+        <span th:text="${post.content}"></span>
+      </td>
+      <td width="20%">
+        <span th:text="${post.name}"></span>
+      </td>
+      <td width="10%">
+        <a th:href="@{'/post/'+${boardDto.id}+'/'+${post.Id}+'/checkDeletePost'}">
+          <button class="btn btn-danger " >삭제</button></a>
+      </td>
+      <td width="10%">
+        <a th:href="@{'/post/' + ${boardDto.id}+'/'+${post.Id}+'/checkRePost'}">
+          <button class="btn btn-warning " >수정</button></a>
+      </td>
+    </tr>
+    <!--<tr th:each="post2 : ${postList2}" th:if="${post2.postNum==post.num}">
+      <td><span> -></span> </td>
+      <td><span th:text="${post2.content}"></span></td>
+      <td><span th:text="${post2.name}"></span></td>
+      <td><span th:text="${post2.postNum}"></span></td>
+      <td width="10%">
+
+        <a th:href="@{'/post/'+${boardDto.id}+'/'+${post.num}+'/checkDeletePost'}">
+          <button class="btn btn-danger " >삭제</button></a>
+      </td>
+      <td width="10%">
+        <a th:href="@{'/post/' + ${boardDto.id}+'/'+${post.num}+'/checkRePost'}">
+          <button class="btn btn-warning " >수정</button></a>
+      </td>
+    </tr>-->
+    </tbody>
+  </table>
+  <!--댓글 테이블 끝-->
+  <div align="center">
+    <ul  class="pagination pagination-sm">
+    <li th:each="pageNum : ${pageList}" th:inline="text">
+        <a th:href="@{'/post/'+${boardDto.id}+'/?page=' + ${pageNum}}">[[${pageNum}+1]]</a>
+    </li>
+    </ul>
+  </div>
+  <!--<ul class="pagination pagination-sm">
+    <li class="page-item" th:each="pageNum : ${pageList}" th:inline="text">
+      <a class="page-link" th:href="@{'/post/'+${boardDto.id}+'/?page=' + ${pageNum}}">[[${pageNum}+1]]</a>
+    </li>
+  </ul>-->
+
+  <hr>
+
+  <!--이전 다음 가는 테이블-->
+ <table class="table table-striped">
+    <thead>
+    <tr>
+      <th class="one wide"></th>
+      <th class="one wide">번호</th>
+      <th class="one wide">분류</th>
+      <th class="ten wide">글제목</th>
+      <th class="two wide">작성자</th>
+      <th class="three wide">작성일</th>
+      <th class="three wide">조회수</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:if="${previousBoard.id!=boardDto.id}">
+      <td>
+        <span>이전글</span>
+      </td>
+      <td>
+        <span th:text="${previousBoard.id}"></span>
+      </td>
+      <td>
+        <span th:text="${previousBoard.category}"></span>
+      </td>
+      <td>
+        <a th:href="@{'/post/' + ${previousBoard.id}}">
+          <span th:text="${previousBoard.title}"></span>
+        </a>
+      </td>
+
+      <td>
+        <span th:text="${previousBoard.writer}"></span>
+      </td>
+
+      <td>
+        <span th:text="${#temporals.format(previousBoard.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+      </td>
+
+      <td>
+        <span th:text="${previousBoard.hintCnt}"></span>
+      </td>
+
+    </tr>
+
+    <tr th:if="${nextBoard.id!=boardDto.id}">
+      <td>
+        <span>다음글</span>
+      </td>
+      <td>
+        <span th:text="${nextBoard.id}"></span>
+      </td>
+      <td>
+        <span th:text="${nextBoard.category}"></span>
+      </td>
+      <td>
+        <a th:href="@{'/post/' + ${nextBoard.id}}">
+          <span th:text="${nextBoard.title}"></span>
+        </a>
+      </td>
+
+      <td>
+        <span th:text="${nextBoard.writer}"></span>
+      </td>
+
+      <td>
+        <span th:text="${#temporals.format(nextBoard.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
+      </td>
+
+      <td>
+        <span th:text="${nextBoard.hintCnt}"></span>
+      </td>
+
+    </tr>
+    </tbody>
+  </table>
+
+  </div><!--본론 끝-->
+</body>
+</html>

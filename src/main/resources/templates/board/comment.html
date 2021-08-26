@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</div>
+<table class="table">
+    <thead>
+    <tr>
+        <th class="one wide">번호</th>
+        <th class="ten wide">내용</th>
+        <th class="two wide">작성자</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <!-- CONTENTS !-->
+    <tr th:each="post : ${postList}">
+        <td>
+            <span th:text="${post.num}"></span>
+        </td>
+        <td>
+            <span th:text="${post.content}"></span>
+        </td>
+        <td>
+            <span th:text="${post.name}"></span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+
+</div>
+
+<form action="/post/comment/{no}" method="post">
+    글 번호 :  <a th:text="${boardDto.id}"><input type="hidden" name="boardEntity" th:value="${boardDto.id}"></a>
+    댓글 작성자 : <input type="text" name="name"><br>
+    댓글 내용 : <textarea name="content"></textarea><br>
+    <input type="submit" value="등록">
+</form>
+</body>
+</html>

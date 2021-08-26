@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!--헤더-->
+<div class="container">
+    <div th:insert="common/header.html" id="header"></div>
+    <form th:action="@{'/post/comment/edit/' + ${postDto.num}+'/'+${boardDto.id}}" method="post" modelAttribute="postDto" >
+        <input type="hidden" name="_method" value="put"/>
+        <input type="hidden" name="num" th:value="${postDto.num}"/>
+        <input type="hidden" name="boardEntity" th:value="${postDto.boardEntity.id}"/>
+        <!--본문-->
+        <div class="form-group">
+            <div  class="text-center" >
+            <h5 th:text="${postDto.boardEntity.id}+'번 게시물'"></h5>
+            <h5 class="text-center">댓글 수정</h5>
+            </div>
+            <br>
+            <label>닉네임</label>
+            <input type="text" class="form-control" name="name" th:value="${postDto.name}">
+            <span th:text="${valid_name}"></span><br>
+            <label>내용</label>
+            <textarea name="content" class="form-control" th:text="${postDto.content}"></textarea>
+            <span th:text="${valid_content}"></span><br>
+        </div>
+        <div>
+            <label>비밀번호</label>
+            <input type="password" class="form-control" id="pwd" name="pwd" th:value="${postDto.pwd}" placeholder="비밀번호를 숫자로만 구성하여 입력하세요">
+            <span th:text="${valid_pwd}"></span><br></div>
+        <!--수정하기 버튼-->
+        <div class="text-center">
+            <input  class="btn btn-primary " role="button" type="submit" value="수정" >
+        </div>
+    </form>
+    <div class="text-center">
+        <a th:href="@{/}" ><button class="btn btn-success  btn-primary me-md-2">  취소 </button> </a></div>
+</div>
+</div>
+</body>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+    a {display: inline-block; }
+    a:link{text-decoration: none;}
+    a:hover{text-decoration: none;}
+</style>
+</head>
+<body>
+<br>
+<div th:fragment="test">
+<div class="navbar  text-center" ><a th:href="@{/}"><h1><strong>  게시판 </strong></h1></a><br><br><br>
+    <table width="200px">
+        <tr>
+            <td><a href="/category/note"><h4>공지</h4></a></td>
+            <td><a href="/category/info"><h4>정보</h4></a></td>
+            <td><a href="/category/free"><h4>자유</h4></a></td>
+        </tr>
+    </table>
+<!--<p><a th:href="@{/post}" class="btn btn-primary text-center" role="button">글쓰기</a></p>-->
+</div>
+    <hr>
+</div>
+
+</body>
+</html>
